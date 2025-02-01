@@ -1,0 +1,54 @@
+/***
+
+PAYPALISHIRING
+
+numRows 1: (1) = 1 + 0
+    P A Y P A L I S H I R I N G
+
+numRows 2: (2) = 2 + 0
+    P Y A I H R N 
+    A P L S I I G
+
+numRows 3: (4) = 3 + 1
+    P   A   H   N
+    A P L S I I G
+    Y   I   R
+
+numRows 4: (6) = 4 + 2
+    P     I    N
+    A   L S  I G
+    Y A   H R
+    P     I
+
+numRows 5: (8) = 5 + 3
+    P       H
+    A     S I
+    Y   I   R
+    P L     I G
+    A       N
+
+***/
+
+char* convert(char* s, int numRows) {
+    
+    if (numRows == 1) { return s; }
+    int sLen = strlen(s);
+    int segLen = 2 * numRows - 2;
+    char* result = calloc(sizeof(char), sLen + 1);
+    int resultIndex = 0;
+
+    for (int row = 0; row < numRows; row ++) {
+
+        for (int segCount = 0; segCount * segLen < sLen; segCount ++) {
+
+            int index = segCount * segLen + row;
+            if (index >= sLen) { continue; } 
+            result[resultIndex] = s[index]; resultIndex ++;
+
+            int index2 = (segCount + 1) * segLen - row;
+            if (index2 >= sLen || index2 % segLen == 0 || index2 == index) { continue; } 
+            result[resultIndex] = s[index2]; resultIndex ++;
+        }
+    }
+    return result;
+}
