@@ -1,0 +1,31 @@
+char* longestPalindrome(char* s) {
+    char* symCenters[2] = {s, s};
+    int longestSC[2] = {0, 0};
+    char* left = s;
+    char* right = s;
+    int palinLen = 0;
+    int longestLen = 0;
+    int loopCount = 0;
+    while (*symCenters[0] && *symCenters[1]) {
+        loopCount ++;
+        palinLen = 0;
+        left = symCenters[1]; right = symCenters[0];
+        while (left >= s && *right) {
+            if (*left != *right) { break; }
+            palinLen = right - left + 1;
+            right ++; left --;
+        }
+        if (palinLen > longestLen) {
+            longestLen = palinLen;
+            longestSC[0] = symCenters[0] - s;
+            longestSC[1] = symCenters[1] - s;
+        }
+        symCenters[(loopCount - 1) % 2] ++;
+    }
+    // printf("Symmetric center at %f. Length: %d.\n", (longestSC[0] + longestSC[1]) / 2.0, longestLen);
+    char* result = calloc(sizeof(char), longestLen + 1);
+    int startIndex = longestSC[1] - (longestLen - 1) / 2;
+    // printf("Left: %d, Right: %d, startIndex: %d.", longestSC[1], longestSC[0], startIndex);
+    strncpy(result, s + startIndex, longestLen);
+    return result;
+}
