@@ -1,0 +1,22 @@
+int myAtoi(char* s) {
+    int val = 0, sign = 1;
+
+    // Skip leading spaces
+    while(*s == ' ') s++;
+
+    // Handle sign
+    switch (*s) {
+        case '-': sign = -1; // fallthrough
+        case '+': s++;
+    }
+
+    // Process digits
+    for (uint8_t digit; (digit = *s - '0') < 10; s++) {
+        if (val >= INT_MAX / 10 && (val > INT_MAX / 10 || digit > INT_MAX % 10)) {
+            return sign == 1 ? INT_MAX : INT_MIN;
+        }
+        val = val * 10 + digit;
+    }
+
+    return sign * val;
+}
