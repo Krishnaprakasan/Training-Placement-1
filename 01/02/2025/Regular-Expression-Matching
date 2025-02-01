@@ -1,0 +1,24 @@
+#include <stdbool.h>
+
+bool isMatchHelper(const char *s, const char *p) {
+    // Base case: if the pattern is empty, the string must also be empty
+    if (*p == '\0') return *s == '\0';
+    
+    // Check if the first character of the string matches the first character of the pattern or if the pattern's first character is '.'
+    bool firstMatch = (*s != '\0' && (*s == *p || *p == '.'));
+    
+    // Check if the pattern contains '*'
+    if (*(p + 1) == '*') {
+        // Two cases:
+        // 1. We skip the '*' pattern (move to the next pattern segment)
+        // 2. The first character matches and we skip this character in the string
+        return isMatchHelper(s, p + 2) || (firstMatch && isMatchHelper(s + 1, p));
+    } else {
+        // Otherwise, move to the next character in both the string and the pattern
+        return firstMatch && isMatchHelper(s + 1, p + 1);
+    }
+}
+
+bool isMatch(char* s, char* p) {
+    return isMatchHelper(s, p);
+}
