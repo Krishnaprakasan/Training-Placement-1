@@ -1,0 +1,57 @@
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     struct ListNode *next;
+ * };
+ */
+// struct ListNode {
+//     int val;
+//     struct ListNode *next;
+// };
+int smallestIndex(struct ListNode** lists, int listsSize) {
+    int idx = 0;
+    for (int i = 0; i < listsSize; ++i) {
+        if (lists[idx] != NULL && lists[i] != NULL) {
+            if(lists[idx]->val >= lists[i]->val) {
+                idx = i;
+            }
+        }
+        else if(lists[idx] != lists[i])
+        {
+            idx = (lists[idx] != NULL) ? idx : i;
+        }
+    }
+    return idx;
+}
+
+struct ListNode* run(struct ListNode** lists, int listsSize) {
+    struct ListNode* result_root = NULL;
+    struct ListNode* current_node = NULL;
+    while (0 != listsSize) {
+        int smallest = smallestIndex(lists, listsSize);
+        //printf("smallest: %d\n", smallest);
+        if(lists[smallest] == NULL)
+        {
+            break;
+        }
+
+        //printf("%d\n", lists[smallest]->val);
+        if (result_root == NULL)
+        {
+            result_root = lists[smallest];
+            current_node = result_root;
+            lists[smallest] = lists[smallest]->next;
+        }
+        else
+        {
+            current_node->next = lists[smallest];
+            current_node = current_node->next;
+            lists[smallest] = lists[smallest]->next;
+        }
+    }
+    return result_root;
+}
+struct ListNode* mergeKLists(struct ListNode** lists, int listsSize) {
+    return run(lists, listsSize);
+}
