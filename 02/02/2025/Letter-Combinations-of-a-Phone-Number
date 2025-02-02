@@ -1,0 +1,144 @@
+// char** letterCombinations(char* digits, int* returnSize) {
+// char* AlphaString[] = {" ", " ", "abc", "def", "ghi", "jkl", "mno", "pqrs", "tuv", "wxyz"};
+// int len = strlen(digits);
+// if (len == 0) {
+//     *returnSize = 0;
+//     return NULL; // No combinations for an empty input
+// }
+
+// int numOfCom = 1;
+// for(int i = 0 ; i<len ; i++){
+//    numOfCom = numOfCom * strlen(AlphaString[digits[i] - '0']);
+// }
+//  int index[len];
+// for (int j = 0; j < len; j++) {
+//    index[j] = 0; // Initialize all indices to 0
+// }
+// char** result = (char**)malloc(numOfCom * sizeof(char*));
+// //jab 2d string banta heh toh phir har chote-chote string ko bhi toh memory dogi ki nhi 
+// for(int i = 0 ; i < numOfCom ; i++){
+//     result[i] = (char*)malloc((len+1) * sizeof(char));
+// }
+// int currentIndex = 0;
+
+// while( currentIndex < numOfCom){
+// for(int j =0 ; j<len ; j++){
+//     result[currentIndex][j] = AlphaString[digits[j] - '0'][index[j]];
+// }
+// // choti string ko khtm bhi karo 
+// result[currentIndex][len] = '\0'; 
+// currentIndex++;
+// int last = len - 1;
+// while(last >= 0){
+// index[last]++;
+//  if (index[last] < strlen(AlphaString[digits[last] - '0'])) {
+//  break; // No carry-over needed
+//  }
+
+// index[last] = 0;
+// last--;
+// }
+// }
+// *returnSize = numOfCom;
+// return result;
+// } 
+
+
+
+// i did it ❤️❤️ , listen search meh matlab value agar string heh toh char* lagega starting meh offcourse , and return NULL hoga , dhyaan rakhna kab tum char bhej rhi aur kahan tum string bhej rhi , uske baad search ko kaise use karna heh , we did it ❤️
+
+#define size 20 
+typedef struct Node{
+    char key ;
+    char* value ;
+    struct Node* next;
+}Node;
+
+Node*hashTable[size];
+
+int hashFunction(char key){
+    return key%size;
+}
+void insert(char key , char* stringmilegi){
+    int index = hashFunction(key);
+    Node* newnode = (Node*)malloc(sizeof(Node));
+    newnode->key = key;
+    newnode->value = strdup(stringmilegi);
+    newnode->next = NULL;
+    if(hashTable[index] == NULL){
+        hashTable[index] = newnode;
+    }
+    else{
+        Node* current = hashTable[index];
+        while(current->next){
+            current = current->next;
+        }
+        current->next = newnode;
+    }
+}
+// seacrh meh bhi string dhund ke laani heh , isiliye dekho char* liye , aur jab string value meh heh toh return NULL hoga
+char* search(char key){
+    int index = hashFunction(key);
+    Node* current = hashTable[index];
+    while(current){
+        if(current->key == key){
+            return current->value;
+        }
+        current = current->next;
+    }
+    return NULL;
+}
+
+char** letterCombinations(char* digits, int* returnSize) {
+    //"2" , nhi kiya because "" se woh ek string consider hoti heh aur hameh charactter chahiye
+    insert('2' , "abc");
+    insert('3' , "def");
+    insert('4' , "ghi");
+    insert('5' , "jkl");
+    insert('6' , "mno");
+    insert('7' , "pqrs");
+    insert('8' , "tuv");
+    insert('9' , "wxyz");
+int len = strlen(digits);
+if (len == 0) {
+    *returnSize = 0;
+    return NULL; // No combinations for an empty input
+}
+int numOfCom = 1;
+for(int i = 0 ; i<len ; i++){
+    char* letters = search(digits[i]);
+   numOfCom = numOfCom * strlen(letters);
+}
+ int index[len];
+for (int j = 0; j < len; j++) {
+   index[j] = 0; // Initialize all indices to 0
+}
+char** result = (char**)malloc(numOfCom * sizeof(char*));
+//jab 2d string banta heh toh phir har chote-chote string ko bhi toh memory dogi ki nhi 
+for(int i = 0 ; i < numOfCom ; i++){
+    result[i] = (char*)malloc((len+1) * sizeof(char));
+}
+
+int currentIndex = 0; 
+while( currentIndex < numOfCom){
+for(int j =0 ; j<len ; j++){
+    result[currentIndex][j] = search(digits[j])[index[j]];
+}
+// choti string ko khtm bhi karo 
+result[currentIndex][len] = '\0'; 
+currentIndex++;
+int last = len - 1;
+while(last >= 0){
+index[last]++;
+ if (index[last] < strlen(search(digits[last]))) {
+ break; // No carry-over needed
+ }
+
+index[last] = 0;
+last--;
+}
+}
+    *returnSize = numOfCom;
+    return result;
+}
+
