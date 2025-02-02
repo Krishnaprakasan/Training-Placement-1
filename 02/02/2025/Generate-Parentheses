@@ -1,0 +1,36 @@
+void generate_temp(char **result, char *temp, int index, int n, int size, int opened, int closed, int *returnSize);
+
+char** generateParenthesis(int n, int* returnSize) {
+    char **result;
+    int size;
+    char *temp;
+
+    result = malloc(sizeof(char *) * 1430);
+    size = 2 * n;
+    temp = malloc (sizeof(char) * (size + 1));
+    (*returnSize) = 0;
+    generate_temp(result, temp, 0, n, size, 0, 0, returnSize);
+    free(temp);
+    return (result);
+}
+
+void generate_temp(char **result, char *temp, int index, int n, int size, int opened, int closed, int *returnSize)
+{
+    if (index == size)
+    {
+        temp[size] = '\0';
+        result[*returnSize] = strdup(temp);
+        (*returnSize)++;
+        return ;
+    }
+    if (opened < n)
+    {
+        temp[index] = '(';
+        generate_temp(result, temp, index + 1, n, size, opened + 1, closed, returnSize);
+    }
+    if (closed < opened)
+    {
+        temp[index] = ')';
+        generate_temp(result, temp, index + 1, n, size, opened, closed + 1, returnSize);
+    }
+}
