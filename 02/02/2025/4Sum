@@ -1,0 +1,71 @@
+void quickSort(int* nums, int left, int right) {
+    if (left < right) {
+        int pivot = nums[right];
+        int i = left - 1;
+        for (int j = left; j < right; j++) {
+            if (nums[j] <= pivot) {
+                i++;
+                int temp = nums[i];
+                nums[i] = nums[j];
+                nums[j] = temp;
+            }
+        }
+        int temp = nums[i + 1];
+        nums[i + 1] = nums[right];
+        nums[right] = temp;
+        int p = i + 1;
+
+        quickSort(nums, left, p - 1);
+        quickSort(nums, p + 1, right);
+    }
+}
+
+int** fourSum(int* nums, int numsSize, int target, int* returnSize, int** returnColumnSizes) {
+    if (numsSize < 4) {
+        *returnSize = 0;
+        return NULL;
+    }
+
+    quickSort(nums, 0, numsSize - 1); // Sort the array
+
+    int** result = (int**)malloc(100 * sizeof(int*)); // Initial allocation for result
+    *returnColumnSizes = (int*)malloc(100 * sizeof(int)); // Array to store column sizes
+    *returnSize = 0; // Initialize the number of results
+
+    for (int i = 0; i < numsSize - 3; i++) {
+        if (i > 0 && nums[i] == nums[i - 1]) continue; // Skip duplicates for the first element
+        for (int j = i + 1; j < numsSize - 2; j++) {
+            if (j > i + 1 && nums[j] == nums[j - 1]) continue; // Skip duplicates for the second element
+
+            int left = j + 1;
+            int right = numsSize - 1;
+            while (left < right) {
+                // Use long long to prevent overflow
+                long long sum = (long long)nums[i] + (long long)nums[j] + (long long)nums[left] + (long long)nums[right];
+                if (sum == target) {
+                    // Found a valid quadruplet
+                    result[*returnSize] = (int*)malloc(4 * sizeof(int));
+                    result[*returnSize][0] = nums[i];
+                    result[*returnSize][1] = nums[j];
+                    result[*returnSize][2] = nums[left];
+                    result[*returnSize][3] = nums[right];
+                    (*returnColumnSizes)[*returnSize] = 4; // Store the size of each quadruplet
+                    (*returnSize)++;
+
+                    // Skip duplicates for the third and fourth elements
+                    while (left < right && nums[left] == nums[left + 1]) left++;
+                    while (left < right && nums[right] == nums[right - 1]) right--;
+
+                    left++;
+                    right--;
+                } else if (sum < target) {
+                    left++;
+                } else {
+                    right--;
+                }
+            }
+        }
+    }
+
+    return result;
+}
