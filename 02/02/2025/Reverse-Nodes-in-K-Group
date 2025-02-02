@@ -1,0 +1,45 @@
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     struct ListNode *next;
+ * };
+ */
+
+bool next_iter(struct ListNode* current,int x){
+    for (int i = 0;i<x;i++){
+        if (current == NULL) return false;
+        current = current->next;
+    }
+    return true;
+}
+
+
+
+struct ListNode* reverseKGroup(struct ListNode* head, int k) {
+    struct ListNode* head_holder = head;
+    int counter = 0;
+    struct ListNode* return_holder = NULL;
+    while (next_iter(head_holder,k)){
+        struct ListNode** save = (struct ListNode**)malloc(k * sizeof(struct ListNode*));
+        struct ListNode* last;
+        for (int i = 0;i<k;i++){
+            save[i] = head_holder;
+            if (i == k - 1 && counter == 0) return_holder = head_holder;
+            head_holder = head_holder->next;
+        }
+
+        for (int i = k - 1;i>=0;i--){
+            if (i>0) (save[i])->next = save[i-1];
+            else (save[i])->next = head_holder;
+        }
+        if (counter > 0) last->next = save[k -1];
+        last = save[0];
+        free(save);
+        counter++;
+    }
+
+
+
+    return return_holder;
+}
