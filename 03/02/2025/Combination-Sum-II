@@ -1,0 +1,28 @@
+
+void findCombinations(int *candidates, int candidatesSize, int target, int *current, int index, int start, int **result, int *returnSize, int **columnSizes) {
+    if (target == 0) {
+        result[*returnSize] = (int *)malloc(index * sizeof(int));
+        for (int i = 0; i < index; i++) {
+            result[*returnSize][i] = current[i];
+        }
+        (*columnSizes)[*returnSize] = index;
+        (*returnSize)++;
+        return;
+    }
+    for (int i = start; i < candidatesSize; i++) {
+        if (i > start && candidates[i] == candidates[i - 1]) continue;
+        if (candidates[i] > target) break;
+        current[index] = candidates[i];
+        findCombinations(candidates, candidatesSize, target - candidates[i], current, index + 1, i + 1, result, returnSize, columnSizes);
+    }
+}
+int** combinationSum2(int* candidates, int candidatesSize, int target, int* returnSize, int** columnSizes) {
+    *returnSize = 0;
+    qsort(candidates, candidatesSize, sizeof(int), (int (*)(const void*, const void*)) strcmp);
+    int **result = (int **)malloc(100 * sizeof(int *));
+    *columnSizes = (int *)malloc(100 * sizeof(int));
+    int *current = (int *)malloc(candidatesSize * sizeof(int));
+    findCombinations(candidates, candidatesSize, target, current, 0, 0, result, returnSize, columnSizes);
+    free(current);
+    return result;
+}
