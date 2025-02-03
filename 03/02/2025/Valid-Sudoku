@@ -1,0 +1,56 @@
+
+
+bool isValidSudoku(char** board, int boardSize, int* boardColSize) {
+    int width = boardSize;
+    int height = *boardColSize;
+    for(int y = 0; y < width; y++) {
+        for(int x = 0; x < height; x++) {
+            char tmprow[width] = {};
+            char tmpcol[height] = {};
+            char tmpsqr[9] = {};
+            if(board[y][x] == '.') { continue; }
+            for(int i = 0; i < width; i++) {
+                if(i == x) {
+                    tmprow[i] = '.'; 
+                    continue; 
+                }
+                tmprow[i] = board[y][i];
+            }
+            for(int c = 0; c < width; c++) {
+                if(tmprow[c] == board[y][x]) {
+                    return false;
+                }
+            }
+
+            for(int i = 0; i < height; i++) {
+                if( i == y ) { 
+                    tmpcol[i] = '.';
+                    continue; 
+                }
+                tmpcol[i] = board[i][x];
+            }
+            for(int c = 0; c < height; c++) {
+                if(tmpcol[c] == board[y][x]) {
+                    return false;
+                }
+            }
+
+            for(int j = 0; j < 3; j++) {
+                for(int i = 0; i < 3; i++) {
+                    if((((y / 3) * 3 + j) == y) && ((x / 3) * 3 + i) == x) {
+                        tmpsqr[i + j * 3] = '.';    
+                        continue;
+                    }
+                    tmpsqr[i + j * 3] = board[(y / 3) * 3 + j][(x / 3) * 3 + i];
+                }
+            }
+            for(int c = 0; c < 9; c++) {
+                if(tmpsqr[c] == board[y][x]) {
+                    return false;
+                }
+            }
+
+        }
+     }
+    return true;
+}
