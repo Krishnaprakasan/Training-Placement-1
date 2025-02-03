@@ -1,0 +1,53 @@
+bool sameString(char* s1,char* s2,int x){
+    for (int i = 0; i < x;i++,s1++,s2++) if (*s1 != *s2) return false;
+    return true;
+}
+
+void reset_check(int* check,int size){
+    for (int i = 0; i < size; i++) check[i] = 0;
+}
+
+bool is_all_words_used(int* check,int size){
+    for (int i = 0; i < size; i++) if (check[i] == 0) return false;
+    return true;
+}
+
+int* findSubstring(char* s, char** words, int wordsSize, int* returnSize) {
+    char* s_holder = s;
+    int word_len = strlen(words[0]);
+    int s_len = strlen(s);
+    int* word_check = (int*)malloc(wordsSize * sizeof(int));
+    int* return_array = (int*)malloc(s_len * sizeof(int));
+    *returnSize = 0;
+
+    reset_check(word_check,wordsSize);
+    int place = 0;
+    int match_counter = 0;
+    for(s_holder;*s_holder != '\0';s_holder++){
+        if (strlen(s_holder) < word_len) break;
+        match_counter = 0;
+        char* s_holder_holder = s_holder;
+        while (!is_all_words_used(word_check,wordsSize)){
+            int inner_match_counter = 0;
+            for (int i = 0; i < wordsSize;i++){
+                if (word_check[i] == 1) continue;
+                if (sameString(s_holder_holder,words[i],word_len)){
+                    match_counter++;
+                    inner_match_counter++;
+                    word_check[i] = 1;
+                    s_holder_holder += word_len;
+                }
+            }
+            if (match_counter == 0 || inner_match_counter == 0) break;
+            if (match_counter == wordsSize) {
+                return_array[*returnSize] = place;
+                (*returnSize)++;
+            }
+        }
+        reset_check(word_check,wordsSize);
+        place++;
+    }
+
+    return return_array;
+
+}
