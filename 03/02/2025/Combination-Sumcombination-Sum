@@ -1,0 +1,44 @@
+#include <stdlib.h>
+#include <string.h>
+
+void backtrack(int* candidates, int candidatesSize, int target, int** result, int* returnSize, 
+               int** returnColumnSizes, int* combination, int combinationSize, int startIndex) {
+    // Base case: if the target is 0, we have found a valid combination
+    if (target == 0) {
+        // Allocate space for the current combination in the result
+        result[*returnSize] = (int*)malloc(combinationSize * sizeof(int));
+        memcpy(result[*returnSize], combination, combinationSize * sizeof(int));
+        (*returnColumnSizes)[*returnSize] = combinationSize;
+        (*returnSize)++;
+        return;
+    }
+
+    // Recursive backtracking
+    for (int i = startIndex; i < candidatesSize; i++) {
+        if (candidates[i] <= target) {
+            // Choose the current candidate
+            combination[combinationSize] = candidates[i];
+            // Explore further with reduced target
+            backtrack(candidates, candidatesSize, target - candidates[i], result, returnSize, 
+                      returnColumnSizes, combination, combinationSize + 1, i);
+        }
+    }
+}
+
+int** combinationSum(int* candidates, int candidatesSize, int target, int* returnSize, int** returnColumnSizes) {
+    // Allocate memory for result and column sizes
+    int** result = (int**)malloc(150 * sizeof(int*));  // The number of combinations is less than 150 as per constraints
+    *returnColumnSizes = (int*)malloc(150 * sizeof(int));
+    *returnSize = 0;
+
+    // Array to hold the current combination
+    int* combination = (int*)malloc(target * sizeof(int));  // At most target numbers in a combination
+
+    // Start backtracking
+    backtrack(candidates, candidatesSize, target, result, returnSize, returnColumnSizes, combination, 0, 0);
+
+    // Free temporary combination array
+    free(combination);
+
+    return result;
+}
