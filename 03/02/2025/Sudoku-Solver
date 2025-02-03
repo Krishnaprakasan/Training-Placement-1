@@ -1,0 +1,218 @@
+typedef struct
+{
+  int remain;
+  int neighbors[9];
+} Sudoku;
+
+// return 1: unvalid action
+int subEmptyGridRemain(char **board, Sudoku *records, int row, int col, int newNumber, int needCheck)
+{
+  int index;
+  if (needCheck)
+  {
+    for (int i = 0; i < 9; i++)
+    {
+      if (row == i)
+        continue;
+      if (board[i][col] != '.')
+        continue;
+      index = i * 9 + col;
+      if (records[index].remain == 1 && records[index].neighbors[newNumber] == 0)
+      {
+        // unvalid number in this grid
+        return 1;
+      }
+    }
+    for (int j = 0; j < 9; j++)
+    {
+      if (col == j)
+        continue;
+      if (board[row][j] != '.')
+        continue;
+      index = row * 9 + j;
+      if (records[index].remain == 1 && records[index].neighbors[newNumber] == 0)
+      {
+        // unvalid number in this grid
+        return 1;
+      }
+    }
+    for (int i = (row / 3) * 3; i < (row / 3) * 3 + 3; i++)
+    {
+      for (int j = (col / 3) * 3; j < (col / 3) * 3 + 3; j++)
+      {
+        if (row == i || col == j)
+          continue;
+        if (board[i][j] != '.')
+          continue;
+        index = i * 9 + j;
+        if (records[index].remain == 1 && records[index].neighbors[newNumber] == 0)
+        {
+          // unvalid number in this grid
+          return 1;
+        }
+      }
+    }
+  }
+
+  // in the same column
+  for (int i = 0; i < 9; i++)
+  {
+    if (row == i)
+      continue;
+    if (board[i][col] != '.')
+      continue;
+    index = i * 9 + col;
+    if (records[index].neighbors[newNumber] == 0)
+      records[index].remain--;
+    records[index].neighbors[newNumber]++;
+  }
+  // in the same row
+  for (int j = 0; j < 9; j++)
+  {
+    if (col == j)
+      continue;
+    if (board[row][j] != '.')
+      continue;
+    index = row * 9 + j;
+    if (records[index].neighbors[newNumber] == 0)
+      records[index].remain--;
+    records[index].neighbors[newNumber]++;
+  }
+  // in the same block
+  for (int i = (row / 3) * 3; i < (row / 3) * 3 + 3; i++)
+  {
+    for (int j = (col / 3) * 3; j < (col / 3) * 3 + 3; j++)
+    {
+      if (row == i || col == j)
+        continue;
+      if (board[i][j] != '.')
+        continue;
+      index = i * 9 + j;
+      if (records[index].neighbors[newNumber] == 0)
+        records[index].remain--;
+      records[index].neighbors[newNumber]++;
+    }
+  }
+
+  return 0;
+}
+
+void resumeEmptyGridRemain(char **board, Sudoku *records, int row, int col, int newNumber)
+{
+  int index;
+  // in the same column
+  for (int i = 0; i < 9; i++)
+  {
+    if (row == i)
+      continue;
+    if (board[i][col] != '.')
+      continue;
+    index = i * 9 + col;
+    if (records[index].neighbors[newNumber] == 1)
+      records[index].remain++;
+    records[index].neighbors[newNumber]--;
+  }
+  // in the same row
+  for (int j = 0; j < 9; j++)
+  {
+    if (col == j)
+      continue;
+    if (board[row][j] != '.')
+      continue;
+    index = row * 9 + j;
+    if (records[index].neighbors[newNumber] == 1)
+      records[index].remain++;
+    records[index].neighbors[newNumber]--;
+  }
+  // in the same block
+  for (int i = (row / 3) * 3; i < (row / 3) * 3 + 3; i++)
+  {
+    for (int j = (col / 3) * 3; j < (col / 3) * 3 + 3; j++)
+    {
+      if (row == i || col == j)
+        continue;
+      if (board[i][j] != '.')
+        continue;
+      index = i * 9 + j;
+      if (records[index].neighbors[newNumber] == 1)
+        records[index].remain++;
+      records[index].neighbors[newNumber]--;
+    }
+  }
+
+  return;
+}
+
+void traverse(char **board, Sudoku *records, int index, int *emptyGrids)
+{
+  while (board[index / 9][index % 9] != '.')
+  {
+    index++;
+  }
+  if (index >= 81)
+    return;
+
+
+  for (int n = 0; n < 9; n++)
+  {
+    if (records[index].neighbors[n] == 0)
+    {
+      if (subEmptyGridRemain(board, records, index / 9, index % 9, n, 1))
+      {
+        records[index].neighbors[n] = 0;
+        continue;
+      }
+      else
+      {
+        board[index / 9][index % 9] = '1' + n;
+        (*emptyGrids) = (*emptyGrids) - 1;
+        if ((*emptyGrids) == 0)
+        {
+          return;
+        }
+        traverse(board, records, index + 1, emptyGrids);
+        if ((*emptyGrids) == 0)
+        {
+          return;
+        }
+        board[index / 9][index % 9] = '.';
+        (*emptyGrids) = (*emptyGrids) + 1;
+        resumeEmptyGridRemain(board, records, index / 9, index % 9, n);
+      }
+    }
+  }
+}
+
+void solveSudoku(char **board, int boardSize, int *boardColSize)
+{
+  Sudoku records[81];
+  bzero(records, sizeof(Sudoku) * 81);
+
+  int index, number, emptyGrids = 0;
+  for (int i = 0; i < 9; i++)
+  {
+    for (int j = 0; j < 9; j++)
+    {
+      if (board[i][j] == '.')
+      {
+        index = i * 9 + j;
+        records[index].remain = 9;
+        emptyGrids++;
+      }
+    }
+  }
+  for (int i = 0; i < 9; i++)
+  {
+    for (int j = 0; j < 9; j++)
+    {
+      if (board[i][j] != '.')
+      {
+        number = board[i][j] - '1';
+        subEmptyGridRemain(board, records, i, j, number, 0);
+      }
+    }
+  }
+
+  traverse(board, records, 0, &emptyGrids);
+  return;
+}
