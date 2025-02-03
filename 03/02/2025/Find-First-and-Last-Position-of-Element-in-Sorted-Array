@@ -1,0 +1,75 @@
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+
+
+
+
+int logSearch(int* nums,int numsSize,int target,int mod){
+    int start = 0;
+    int end = numsSize - 1;
+    if (nums[start] == target && mod == 0) return start;
+    if (nums[end] == target && mod == 1) return end;
+    while (end - start != 1){
+        int diff = end - start;
+        int index = diff / 2 + start;
+        int current_val = nums[index];
+        int prev_val = nums[index - 1];
+        int next_val = nums[index + 1];
+        if (current_val == target){
+            if (mod == 0){
+                if (prev_val != target) return index;
+                else {
+                    end = index;
+                }
+            }else if(mod == 1){
+                if (next_val != target) return index;
+                else {
+                    start = index;
+                }
+            }
+        }else if (current_val > target){
+            end = index;
+        }else {
+            start = index;
+        }
+        if (end - start == 1){
+            if (mod == 0 && prev_val != target && current_val == target) return index;
+            if (mod == 1 && next_val != target && current_val == target) return index;
+        }
+    }
+    return -1;
+}
+
+int* searchRange(int* nums, int numsSize, int target, int* returnSize) {
+    int* x = (int*)malloc(2 * sizeof(int));
+    *returnSize = 2;
+    if (numsSize == 0){
+        x[0] = -1;
+        x[1] = -1;
+        return x;
+    }
+    else if (numsSize == 1){
+        if (nums[0] == target){
+            x[0] = 0;
+            x[1] = 0;
+        }else{
+            x[0] = -1;
+            x[1] = -1;
+        }
+        return x;
+    }
+    if (nums[0] == target && nums[numsSize -1] == target){
+        x[0] = 0;
+        x[1] = numsSize -1;
+        return x;
+    }
+
+    int start = logSearch(nums,numsSize,target,0);
+    int end = logSearch(nums,numsSize,target,1);
+    x[0] = start;
+    x[1] = end;
+    if (start == -1 && end != -1) x[0] = end;
+    if (start != -1 && end == -1) x[1] = start;
+    return x;
+}
