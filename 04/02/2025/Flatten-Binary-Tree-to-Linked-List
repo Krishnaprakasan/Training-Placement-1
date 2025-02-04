@@ -1,0 +1,51 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+
+struct TreeNode *recursion(struct TreeNode* root)
+{
+    struct TreeNode *temp = NULL, *rightmost = NULL;
+
+    if (root)
+    {
+        temp = recursion(root->left);
+        recursion(root->right);
+        if (root->left)
+        {
+            if (root->right)
+            {
+                rightmost = root->right;
+                temp->right = rightmost;
+                while (rightmost->right)
+                    rightmost = rightmost->right;
+                (temp != root->left) ? (root->right = root->left) : (root->right = temp);
+                root->left = NULL;
+                return rightmost;
+            }
+            root->right = root->left;
+            root->left = NULL;
+        }
+        if (root->right)
+        {
+            rightmost = root->right;
+            while (rightmost->right)
+                rightmost = rightmost->right;
+            return rightmost;
+        }
+        return root;
+    }
+    return temp;
+}
+
+void flatten(struct TreeNode* root)
+{
+    struct TreeNode *temp = NULL, *rightmost = NULL;
+
+    if (root)
+        recursion(root);
+}
