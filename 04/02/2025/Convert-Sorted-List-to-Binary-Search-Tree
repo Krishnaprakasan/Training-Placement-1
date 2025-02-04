@@ -1,0 +1,54 @@
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     struct ListNode *next;
+ * };
+ */
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+
+void insert(struct TreeNode **root, int key){
+    if((*root)==NULL){
+        (*root)= (struct TreeNode *)malloc(sizeof(struct TreeNode));
+        (*root)->val = key;
+        (*root)->left = (*root)->right = NULL;
+        return ;
+    }
+    if(key<(*root)->val) insert(&((*root)->left),key);
+    else insert(&((*root)->right), key);
+}
+// helper function to implement the binary search algorihtm on the array and insert the middle in tree
+void helper(struct TreeNode **root, int l, int r, int *arr){
+    if(l>=r) return;
+    int mid = (l+r)/2;
+    insert(root, arr[mid]);
+    helper(root, l, mid, arr);
+    helper(root, mid+1, r, arr);
+}
+struct TreeNode* sortedListToBST(struct ListNode* head) {
+    if(head == NULL) return NULL;
+    if(head->next ==NULL){
+        struct TreeNode *root = (struct TreeNode *)malloc(sizeof(struct TreeNode));
+        root->val = head->val;
+        root->left = root->right = NULL;
+        return root;
+    }
+    int arr[20000];
+    struct ListNode *ptr = head;
+    int i=0;
+    while(ptr){
+        arr[i++]=ptr->val;
+        ptr= ptr->next;
+    }
+    int r=i, l=0;
+    struct TreeNode *ansroot = NULL;
+    helper(&ansroot, l,r,arr);
+    return ansroot;
+}
