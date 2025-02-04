@@ -1,0 +1,58 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+//Function to create new node
+struct TreeNode * create_node(int value){
+    struct TreeNode * new_node=(struct TreeNode *)malloc(sizeof(struct TreeNode));
+    new_node->val=value;
+    new_node->left=NULL;
+    new_node->right=NULL;
+
+    return new_node;
+}
+
+//Function to find the index of value in inorder array
+int findIndex(int * inorder, int start, int end, int rootValue){
+    for(int i=start;i<=end;i++){
+        if(inorder[i]==rootValue){
+            return i;
+        }
+    }
+
+    return -1;
+}
+
+//Helper function
+struct TreeNode * buildTreeHelper(int * preorder, int * inorder, int start, int end, int * preorderIndex){
+    if(start>end){//If array/tree is epmty
+        return NULL;
+    }
+
+    int rootValue=preorder[*preorderIndex];//Store the value of root node
+    struct TreeNode * root=create_node(rootValue);//Create root
+    (*preorderIndex)++;//Increment
+
+    if(start==end){//If a root has no children
+        return root;
+    }
+
+    int rootIndex=findIndex(inorder, start, end, rootValue);//TO find index
+
+    //Recursively create the left Sub-Tree
+    root->left=buildTreeHelper(preorder, inorder, start,rootIndex-1, preorderIndex);
+
+    //Recursively create the right Sub-Tree
+    root->right=buildTreeHelper(preorder, inorder, rootIndex+1, end, preorderIndex);
+
+    return root;
+}
+
+struct TreeNode* buildTree(int* preorder, int preorderSize, int* inorder, int inorderSize) {
+    int preorderIndex=0;
+    return buildTreeHelper(preorder, inorder, 0, preorderSize-1, &preorderIndex);
+}
