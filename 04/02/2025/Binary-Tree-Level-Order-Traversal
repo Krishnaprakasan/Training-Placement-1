@@ -1,0 +1,57 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+/**
+ * Return an array of arrays of size *returnSize.
+ * The sizes of the arrays are returned as *returnColumnSizes array.
+ * Note: Both returned array and *columnSizes array must be malloced, assume caller calls free().
+ */
+int** levelOrder(struct TreeNode* root, int* returnSize, int** returnColumnSizes) {
+    *returnSize = 0;
+    if (root == NULL) {
+        returnColumnSizes = NULL;
+        return NULL;
+    }
+
+    //max tree has 2000 nodes
+    struct TreeNode** q = malloc(sizeof(struct TreeNode*) * 2000);
+    int** res = malloc(sizeof(int*) * 2000);
+    *returnColumnSizes = malloc(sizeof(int) * 2000);
+
+    int first,last, lvl;
+    first = last = lvl = 0;
+
+    q[last++] = root;
+
+    while (first < last) {
+
+        //prepare array to store results
+        (*returnColumnSizes)[lvl] = last - first;
+        int* arr = malloc(sizeof(int) * (last - first));
+        res[lvl] = arr;
+
+        int end = last;
+        int start = first;
+        int i = 0;
+        while (start < end) {
+            // printf("%i ", q[start]->val);
+            res[lvl][i++] = q[start]->val;
+            if (q[start]->left != NULL) q[last++] = q[start]->left;
+            if (q[start]->right != NULL) q[last++] = q[start]->right;
+            start++;
+        }
+        // printf("\n");
+
+        first = end;
+        lvl++;
+    }
+    free(q);
+    *returnSize = lvl;
+
+    return res;
+}
