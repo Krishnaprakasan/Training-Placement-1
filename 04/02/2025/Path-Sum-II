@@ -1,0 +1,80 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+/**
+ * Return an array of arrays of size *returnSize.
+ * The sizes of the arrays are returned as *returnColumnSizes array.
+ * Note: Both returned array and *columnSizes array must be malloced, assume caller calls free().
+ */
+#include <stdio.h>
+#include <stdlib.h>
+
+
+// function to create a new tree node
+struct TreeNode* createNode(int val) {
+    struct TreeNode* node = (struct TreeNode*)malloc(sizeof(struct TreeNode));
+    node->val = val;
+    node->left = node->right = NULL;
+    return node;
+}
+
+// function to copy the current path into the result
+void addPath(int** result, int* path, int pathSize, int* returnColumnSizes, int* resultSize) {
+    result[*resultSize] = (int*)malloc(pathSize * sizeof(int));
+    for (int i = 0; i < pathSize; i++) {
+        result[*resultSize][i] = path[i];
+    }
+    returnColumnSizes[*resultSize] = pathSize;
+    (*resultSize)++;
+}
+
+// Recursive function to solve the problem
+void solve(struct TreeNode* root, int targetSum, int* path, int pathSize, int** result, int* returnColumnSizes, int* resultSize) {
+    if (root == NULL) {
+        return;
+    }
+    
+    path[pathSize++] = root->val;
+
+    // Check if it's a leaf node
+    if (root->left == NULL && root->right == NULL) {
+        long sum = 0;
+        for (int i = 0; i < pathSize; i++) {
+            sum += path[i];
+        }
+        if (sum == targetSum) {
+            addPath(result, path, pathSize, returnColumnSizes, resultSize);
+        }
+    }
+    
+    solve(root->left, targetSum, path, pathSize, result, returnColumnSizes, resultSize);
+    solve(root->right, targetSum, path, pathSize, result, returnColumnSizes, resultSize);
+}
+
+// Main function to return all root-to-leaf paths where the sum equals targetSum
+int** pathSum(struct TreeNode* root, int targetSum, int* returnSize, int** returnColumnSizes) {
+    int** result = (int**)malloc(1000 * sizeof(int*));  // Arbitrary large value, can be adjusted
+    *returnColumnSizes = (int*)malloc(1000 * sizeof(int));
+    *returnSize = 0;
+    
+    int* path = (int*)malloc(1000 * sizeof(int));  // To store the current path (arbitrary size)
+    
+    solve(root, targetSum, path, 0, result, *returnColumnSizes, returnSize);
+    
+    free(path);  // Free the path array after solving
+    return result;
+}
+
+// Function to free the memory allocated for result
+void freeResult(int** result, int* returnColumnSizes, int returnSize) {
+    for (int i = 0; i < returnSize; i++) {
+        free(result[i]);
+    }
+    free(result);
+    free(returnColumnSizes);
+}
