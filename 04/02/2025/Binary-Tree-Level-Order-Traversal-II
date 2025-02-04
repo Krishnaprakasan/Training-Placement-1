@@ -1,0 +1,55 @@
+#include <stdlib.h>
+
+// Function to perform level order traversal
+int** levelOrderBottom(struct TreeNode* root, int* returnSize, int** returnColumnSizes) {
+    if (!root) {
+        *returnSize = 0;
+        *returnColumnSizes = NULL;
+        return NULL;
+    }
+
+    // Queue for BFS traversal
+    struct TreeNode** queue = (struct TreeNode**)malloc(2000 * sizeof(struct TreeNode*)); // We assume a max of 2000 nodes in the tree
+    int front = 0, rear = 0;
+    queue[rear++] = root;
+
+    // Result array for level order
+    int** result = (int**)malloc(2000 * sizeof(int*)); // Max 2000 levels
+    *returnColumnSizes = (int*)malloc(2000 * sizeof(int)); // Sizes for each level
+    int levels = 0;
+
+    while (front < rear) {
+        int levelSize = rear - front;
+        result[levels] = (int*)malloc(levelSize * sizeof(int)); // Allocate space for the level
+        (*returnColumnSizes)[levels] = levelSize;
+
+        // Process all nodes at the current level
+        for (int i = 0; i < levelSize; i++) {
+            struct TreeNode* node = queue[front++];
+            result[levels][i] = node->val;
+            
+            // Add children to the queue
+            if (node->left) {
+                queue[rear++] = node->left;
+            }
+            if (node->right) {
+                queue[rear++] = node->right;
+            }
+        }
+        levels++;
+    }
+
+    // Reverse the result to get bottom-up level order
+    for (int i = 0; i < levels / 2; i++) {
+        int* temp = result[i];
+        result[i] = result[levels - i - 1];
+        result[levels - i - 1] = temp;
+
+        int tempSize = (*returnColumnSizes)[i];
+        (*returnColumnSizes)[i] = (*returnColumnSizes)[levels - i - 1];
+        (*returnColumnSizes)[levels - i - 1] = tempSize;
+    }
+
+    *returnSize = levels; // Set the return size
+    return result;
+}
