@@ -1,0 +1,116 @@
+/**
+ * Definition for a Node.
+ * struct Node {
+ *     int val;
+ *     struct Node *left;
+ *     struct Node *right;
+ *     struct Node *next;
+ * };
+ */
+typedef struct queue {
+    int front;
+    int rear;
+    int size;
+    struct Node**arr;
+} queue ;
+
+void init_queue(queue *q, int data)
+{
+    q->front = q->rear = 0;
+    q->size = data;
+    q->arr = (struct Node**)malloc(sizeof(struct Node*) * data);
+}
+
+int isFull(queue *q)
+{
+    if(q->rear == q->size)
+        return 1;
+    else
+        return 0;    
+}
+
+int isEmpty(queue *q)
+{
+    if(q->front >= q->rear)
+        return 1;
+    else
+        return 0;    
+}
+
+void enqueue(queue *q, struct Node* nn)
+{
+    if (q->rear < q->size - 1)
+        q->arr[q->rear++] = nn;
+    else
+        return;
+}
+
+struct Node* dequeue(queue *q)
+{
+    if (isEmpty(q)) 
+        return NULL;
+    return q->arr[q->front++];
+}
+
+void levelorder(queue *q, struct Node* root)
+{
+    struct Node*p = root;
+    if(p == NULL)
+    {
+        //printf("The tree is empty !\n");
+        //return height;
+        return;
+    }
+
+    // Inserted first element and NULL to complete first level
+    enqueue(q , p);
+    enqueue(q , NULL);
+    while(!isEmpty(q))
+    {
+        struct Node* r = dequeue(q);
+        if(r != NULL)
+        {
+            //printf("%d ",r->data);
+            if(r->left != NULL)
+                enqueue(q , r->left);
+            if(r->right != NULL)
+                enqueue(q , r->right);    
+        }
+        else
+        {
+            //height++;
+            // Check if the queue is not empty before enqueuing the next level marker
+            if (!isEmpty(q)) {
+                enqueue(q, NULL);
+            }
+            //printf("\n");
+        }
+    }
+    //return height;
+}
+
+struct Node* connect(struct Node* root) {
+    if(root == NULL)
+        return NULL;
+    queue q;
+    init_queue(&q , pow(2,13));
+    levelorder(&q , root);
+    printf("%d",q.front);
+    int index = 0;
+    
+    while(index < q.front-2)
+    {
+        if(q.arr[index+1] == NULL)
+        {
+            q.arr[index]->next = NULL;
+            index++;
+        }
+        else
+        {
+            q.arr[index]->next = q.arr[index+1];
+        }
+        index++;
+    }
+    
+    return root;
+}
